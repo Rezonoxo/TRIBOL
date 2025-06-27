@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRIBOL PRO 1.0 | Szyfr Trójkowy</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/TextPlugin.min.js"></script>
+  <style>
+    :root {
+      --primary: #4b2067; /* ciemny fiolet */
+      --primary-light: #6c3483; /* jaśniejszy fiolet */
+      --secondary: #1a1a40; /* granat */
+      --dark: #12002f; /* bardzo ciemny granat */
+      --light: #e6e6fa; /* lawendowy */
+      --accent: #a259f7; /* fioletowy akcent */
+      --accent2: #3d3d7a; /* granatowy akcent */
+      --success: #4caf50;
+      --error: #f44336;
+      --gray: #b8b8d1;
+      --dark-gray: #6c757d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, .container, header, .card, .info-section, .table-section, footer, * {
+      user-select: none;
+    }
+    input, textarea, .result-box {
+      user-select: text;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--secondary) 70%);
+      min-height: 100vh;
+      font-family: 'Montserrat', Arial, sans-serif;
+      color: var(--light);
+      overflow-x: hidden;
+      position: relative;
+      padding: 20px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(251, 86, 7, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 190, 11, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 30% 60%, rgba(58, 134, 255, 0.1) 0%, transparent 20%);
+      z-index: -1;
+      animation: bgPulse 15s infinite alternate;
+    }
+
+    @keyframes bgPulse {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.7; }
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+      cursor: crosshair;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      box-shadow: 0 0 20px rgba(251, 86, 7, 0.5);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(65, 1, 103, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(251, 86, 7, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(251, 86, 7, 0); }
+    }
+
+    .logo-icon i {
+      font-size: 28px;
+      color: white;
+    }
+
+    h1 {
+      font-size: 3rem;
+      background: linear-gradient(to right, var(--accent), var(--primary-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .card-title i {
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 1.1rem;
+      font-family: 'Fira Mono', monospace;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(251, 86, 7, 0.3);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 120px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(251, 86, 7, 0.3);
+    }
+
+    .btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(251, 86, 7, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      background: var(--accent2);
+      box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: #5a95ff;
+      box-shadow: 0 8px 20px rgba(58, 134, 255, 0.4);
+    }
+
+    .btn-success {
+      background: var(--success);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-success:hover {
+      background: #5dbb61;
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .result-container {
+      margin-top: 25px;
+      position: relative;
+    }
+
+    .result-label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .result-label i {
+      margin-right: 10px;
+    }
+
+    .result-box {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 60px;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.2rem;
+      color: white;
+      word-break: break-all;
+      position: relative;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .result-box.has-content {
+      border-color: rgba(251, 86, 7, 0.4);
+      box-shadow: 0 0 15px rgba(251, 86, 7, 0.1);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .table-section {
+      margin: 50px 0;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 15px;
+      overflow: hidden;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.1rem;
+    }
+
+    th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      padding: 15px 20px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    td {
+      padding: 15px 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .info-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin: 50px 0;
+    }
+
+    .info-card {
+      flex: 1;
+      min-width: 300px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .info-card h3 {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-card p {
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 15px;
+    }
+
+    .info-card ul {
+      padding-left: 25px;
+      margin: 15px 0;
+    }
+
+    .info-card li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 50px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      background: var(--success);
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transform: translateX(150%);
+      transition: transform 0.4s ease;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.error {
+      background: var(--error);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    @keyframes textReveal {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    .text-reveal {
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      background-size: 200% auto;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: textReveal 1.5s linear infinite;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      .table-container {
+        padding: 5px;
+      }
+      table, th, td {
+        font-size: 0.95rem;
+        padding: 6px 4px;
+      }
+      th, td {
+        min-width: 60px;
+      }
+    }
+    @media (max-width: 600px) {
+      .table-section {
+        margin: 20px 0;
+      }
+      .table-container {
+        padding: 2px;
+      }
+      table, th, td {
+        font-size: 0.85rem;
+        padding: 3px 2px;
+      }
+      th, td {
+        min-width: 40px;
+      }
+    }
+
+    /* Tryb wydajnościowy - wyłączenie efektów hover i animacji */
+    body.performance-mode .btn:hover,
+    body.performance-mode .btn-secondary:hover,
+    body.performance-mode .btn-success:hover,
+    body.performance-mode .card:hover,
+    body.performance-mode .copy-btn:hover,
+    body.performance-mode tr:hover td {
+      background: rgba(255,255,255,0.08) !important;
+      box-shadow: unset !important;
+      color: unset !important;
+      transform: unset !important;
+      cursor: default !important;
+    }
+    body.performance-mode .fade-in,
+    body.performance-mode .logo-icon,
+    body.performance-mode .pulse,
+    body.performance-mode .text-reveal {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    /* Intuicyjne podświetlenie par ZNAK-KOD w tabeli kodów algorytmu */
+    .highlight-pair {
+      background: #a259f7 !important;
+      color: #fff !important;
+      transition: background 0.2s, color 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+  
+  <div class="container">
+    <header>
+      <div class="logo fade-in">
+        <div class="logo-icon">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h1>TRIBOL PRO 1.0</h1>
+      </div>
+      <p class="subtitle fade-in delay-1">Zaawansowany system szyfrowania tekstu oparty o unikalny algorytm TRIBOL. Szyfruj i odszyfruj wiadomości z najwyższym poziomem bezpieczeństwa i prywatności. Wszystko lokalnie, bez przesyłania danych do sieci.</p>
+    </header>
+    <div style="text-align:center; margin-bottom:20px;">
+      <label style="display:inline-flex;align-items:center;gap:8px;font-size:1.1rem;cursor:pointer;">
+        <input type="checkbox" id="performanceModeToggle" style="width:20px;height:20px;vertical-align:middle;"> Tryb wydajnościowy (wyłącza animacje tła)
+      </label>
+    </div>
+    
+    <div class="content-grid">
+      <div class="card fade-in delay-2">
+        <h2 class="card-title"><i class="fas fa-lock"></i> Szyfrowanie</h2>
+        
+        <div class="form-group">
+          <label for="plain">Tekst do zaszyfrowania:</label>
+          <div class="input-wrapper">
+            <input type="text" id="plain" placeholder="Wpisz tekst np. TAJNY KOD 2.Ą">
+          </div>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn" onclick="encrypt()">
+            <i class="fas fa-key"></i> Szyfruj
+          </button>
+          <button class="btn btn-secondary" onclick="clearInput('plain')">
+            <i class="fas fa-trash"></i> Wyczyść
+          </button>
+        </div>
+        
+        <div class="result-container">
+          <div class="result-label">
+            <i class="fas fa-shield-alt"></i> Zaszyfrowany tekst:
+          </div>
+          <div class="result-box" id="encrypted">
+            <span class="placeholder">Wynik szyfrowania pojawi się tutaj...</span>
+          </div>
+          <button class="copy-btn" onclick="copyResult('encrypted')">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="card fade-in delay-3">
+        <h2 class="card-title"><i class="fas fa-unlock"></i> Deszyfrowanie</h2>
+        
+        <div class="form-group">
+          <label for="coded">Wklej lub wpisz zakodowany ciąg (bez spacji, 3 znaki na każdy znak):</label>
+          <div class="input-wrapper">
+            <textarea id="coded" rows="3" placeholder="Np. S5TA1BZ0C7GHA2B___1AB8IJ7JK___2C9DOTXXX"></textarea>
+          </div>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn" onclick="decrypt()">
+            <i class="fas fa-unlock-alt"></i> Odszyfruj
+          </button>
+          <button class="btn btn-secondary" onclick="clearInput('coded')">
+            <i class="fas fa-trash"></i> Wyczyść
+          </button>
+        </div>
+        
+        <div class="result-container">
+          <div class="result-label">
+            <i class="fas fa-file-alt"></i> Odszyfrowany tekst:
+          </div>
+          <div class="result-box" id="decrypted">
+            <span class="placeholder">Wynik deszyfrowania pojawi się tutaj...</span>
+          </div>
+          <button class="copy-btn" onclick="copyResult('decrypted')">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="table-section fade-in delay-4">
+      <h2 class="card-title"><i class="fas fa-table"></i> Tabela Kodów Algorytmu TRIBOL</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Znak</th>
+              <th>Kod</th>
+              <th>Znak</th>
+              <th>Kod</th>
+              <th>Znak</th>
+              <th>Kod</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A</td>
+              <td>A1B</td>
+              <td>N</td>
+              <td>7GH</td>
+              <td>0</td>
+              <td>0A9</td>
+            </tr>
+            <tr>
+              <td>B</td>
+              <td>2DF</td>
+              <td>O</td>
+              <td>8IJ</td>
+              <td>1</td>
+              <td>1B9</td>
+            </tr>
+            <tr>
+              <td>C</td>
+              <td>G5H</td>
+              <td>P</td>
+              <td>K1L</td>
+              <td>2</td>
+              <td>2C9</td>
+            </tr>
+            <tr>
+              <td>D</td>
+              <td>7JK</td>
+              <td>Q</td>
+              <td>M2N</td>
+              <td>3</td>
+              <td>3D9</td>
+            </tr>
+            <tr>
+              <td>E</td>
+              <td>M3L</td>
+              <td>R</td>
+              <td>O3P</td>
+              <td>4</td>
+              <td>4E9</td>
+            </tr>
+            <tr>
+              <td>F</td>
+              <td>Q8R</td>
+              <td>S</td>
+              <td>Q4R</td>
+              <td>5</td>
+              <td>5F9</td>
+            </tr>
+            <tr>
+              <td>G</td>
+              <td>S2T</td>
+              <td>T</td>
+              <td>S5T</td>
+              <td>6</td>
+              <td>6G9</td>
+            </tr>
+            <tr>
+              <td>H</td>
+              <td>4UV</td>
+              <td>U</td>
+              <td>U6V</td>
+              <td>7</td>
+              <td>7H9</td>
+            </tr>
+            <tr>
+              <td>I</td>
+              <td>X6Y</td>
+              <td>V</td>
+              <td>V7W</td>
+              <td>8</td>
+              <td>8I9</td>
+            </tr>
+            <tr>
+              <td>J</td>
+              <td>Z0C</td>
+              <td>W</td>
+              <td>W8X</td>
+              <td>9</td>
+              <td>9J9</td>
+            </tr>
+            <tr>
+              <td>K</td>
+              <td>1AB</td>
+              <td>X</td>
+              <td>Y0Z</td>
+              <td>.</td>
+              <td>D0T</td>
+            </tr>
+            <tr>
+              <td>L</td>
+              <td>3CD</td>
+              <td>Y</td>
+              <td>A2B</td>
+              <td>SPACJA</td>
+              <td>0S0</td>
+            </tr>
+            <tr>
+              <td>M</td>
+              <td>5EF</td>
+              <td>Z</td>
+              <td>C3D</td>
+              <td>PUŁAPKA(Ą)</td>
+              <td>X0X</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="info-section">
+      <div class="info-card fade-in delay-1">
+        <h3><i class="fas fa-info-circle"></i> O algorytmie TRIBOL</h3>
+        <p>TRIBOL to nowoczesny algorytm szyfrowania, w którym każdy znak tekstu jest reprezentowany przez unikalny, trzyznakowy kod. Dzięki temu rozwiązaniu, zakodowane wiadomości są odporne na proste ataki i nieczytelne bez znajomości klucza.</p>
+        <p>Najważniejsze cechy TRIBOL PRO 1.0:</p>
+        <ul>
+          <li>Każdy znak ma niepowtarzalny, trzyznakowy kod</li>
+          <li>Brak spacji w zakodowanym ciągu</li>
+          <li>Obsługa liter, cyfr i wybranych znaków specjalnych</li>
+          <li>Specjalne pułapki na znaki diakrytyczne</li>
+          <li>Całość działa lokalnie w Twojej przeglądarce</li>
+        </ul>
+      </div>
+      
+      <div class="info-card fade-in delay-2">
+        <h3><i class="fas fa-lightbulb"></i> Wskazówki użytkowania</h3>
+        <p>Aby w pełni wykorzystać możliwości TRIBOL PRO 1.0, pamiętaj o poniższych zasadach:</p>
+        <ul>
+          <li>Znaki diakrytyczne są automatycznie usuwane podczas szyfrowania</li>
+          <li>Znak "Ą" to specjalna pułapka, zawsze kodowana jako "X0X"</li>
+          <li>Zakodowany tekst musi mieć długość podzielną przez 3</li>
+          <li>Nieznane kody podczas deszyfrowania są oznaczane jako "?"</li>
+          <li>Wszystkie operacje są wykonywane lokalnie, Twoje dane są bezpieczne</li>
+        </ul>
+        <p>Bezpieczeństwo:</p>
+        <p>TRIBOL PRO 1.0 nie przesyła żadnych danych do Internetu. Cały proces szyfrowania i deszyfrowania odbywa się w Twojej przeglądarce, gwarantując pełną prywatność.</p>
+      </div>
+    </div>
+    
+    <footer class="fade-in delay-4">
+      <p>© 2024 TRIBOL PRO 1.0 | Profesjonalny System Szyfrowania Tekstu</p>
+      <p>Strona wykorzystuje animacje GSAP oraz dynamiczne efekty tła reagujące na ruch kursora</p>
+    </footer>
+  </div>
+  
+  <div class="notification" id="notification">
+    <i class="fas fa-check-circle"></i>
+    <span>Skopiowano do schowka!</span>
+  </div>
+
+  <script>
+    // Tryb wydajnościowy
+    let performanceMode = false;
+    if (localStorage.getItem('performanceMode') === '1') performanceMode = true;
+    document.addEventListener('DOMContentLoaded', () => {
+      const perfToggle = document.getElementById('performanceModeToggle');
+      if (perfToggle) {
+        perfToggle.checked = performanceMode;
+        perfToggle.addEventListener('change', function() {
+          localStorage.setItem('performanceMode', this.checked ? '1' : '0');
+          location.reload();
+        });
+      }
+    });
+
+    // Particle background: swobodne latanie + przyciąganie do kursora jak do magnesu + eksplozja
+    function createParticles() {
+      if (performanceMode) return; // nie twórz cząsteczek w trybie wydajnościowym
+      const container = document.getElementById('particles');
+      const particleCount = 80;
+      window.particles = [];
+      const particles = window.particles;
+      const bounds = { w: window.innerWidth, h: window.innerHeight };
+      // Inicjalizacja cząsteczek
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 5 + 2;
+        particle.style.position = 'absolute';
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        let color, glow;
+        if (i % 3 === 0) {
+          color = 'rgba(76, 52, 131, 0.7)';
+          glow = '0 0 12px 4px rgba(76, 52, 131, 0.25)';
+        } else if (i % 3 === 1) {
+          color = 'rgba(58, 29, 110, 0.7)';
+          glow = '0 0 12px 4px rgba(58, 29, 110, 0.25)';
+        } else {
+          color = 'rgba(162, 89, 247, 0.7)';
+          glow = '0 0 12px 4px rgba(162, 89, 247, 0.25)';
+        }
+        particle.style.background = color;
+        particle.style.borderRadius = '50%';
+        particle.style.boxShadow = glow;
+        // Losowa pozycja i prędkość
+        const px = Math.random() * bounds.w;
+        const py = Math.random() * bounds.h;
+        particle.style.left = px + 'px';
+        particle.style.top = py + 'px';
+        container.appendChild(particle);
+        particles.push({
+          el: particle,
+          x: px,
+          y: py,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          size: size
+        });
+      }
+      // DRYFOWANIE: bardzo delikatne, częste zmiany prędkości
+      setInterval(() => {
+        for (let p of particles) {
+          p.vx += (Math.random() - 0.5) * 0.02;
+          p.vy += (Math.random() - 0.5) * 0.02;
+          // Ogranicz maksymalną prędkość
+          const maxV = 0.9;
+          if (p.vx > maxV) p.vx = maxV;
+          if (p.vx < -maxV) p.vx = -maxV;
+          if (p.vy > maxV) p.vy = maxV;
+          if (p.vy < -maxV) p.vy = -maxV;
+        }
+      }, 120);
+      let mouse = { x: null, y: null };
+      document.addEventListener('mousemove', e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+      document.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+      });
+      function animateParticles() {
+        for (let p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > bounds.w - p.size) p.vx *= -1;
+          if (p.y < 0 || p.y > bounds.h - p.size) p.vy *= -1;
+          // Przyciąganie do kursora jak do magnesu
+          if (mouse.x !== null && mouse.y !== null) {
+            const dx = mouse.x - (p.x + p.size/2);
+            const dy = mouse.y - (p.y + p.size/2);
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 100) { // zasięg magnesu
+              const force = (120 - dist) / 120 * 0.8;
+              p.vx += force * dx / dist * 0.2;
+              p.vy += force * dy / dist * 0.2;
+            }
+          }
+          p.vx *= 0.98;
+          p.vy *= 0.98;
+          p.el.style.left = p.x + 'px';
+          p.el.style.top = p.y + 'px';
+        }
+        requestAnimationFrame(animateParticles);
+      }
+      animateParticles();
+      // Aktualizacja bounds przy zmianie rozmiaru okna
+      window.addEventListener('resize', () => {
+        bounds.w = window.innerWidth;
+        bounds.h = window.innerHeight;
+      });
+    }
+
+    // Encryption table
+    const codeTable = {
+      'A': 'A1B', 'B': '2DF', 'C': 'G5H', 'D': '7JK', 'E': 'M3L',
+      'F': 'Q8R', 'G': 'S2T', 'H': '4UV', 'I': 'X6Y', 'J': 'Z0C',
+      'K': '1AB', 'L': '3CD', 'M': '5EF', 'N': '7GH', 'O': '8IJ',
+      'P': 'K1L', 'Q': 'M2N', 'R': 'O3P', 'S': 'Q4R', 'T': 'S5T',
+      'U': 'U6V', 'V': 'V7W', 'W': 'W8X', 'X': 'Y0Z', 'Y': 'A2B', 'Z': 'C3D',
+      ' ': '0S0', '.': 'D0T', 'Ą': 'X0X',
+      '0': '0A9', '1': '1B9', '2': '2C9', '3': '3D9', '4': '4E9',
+      '5': '5F9', '6': '6G9', '7': '7H9', '8': '8I9', '9': '9J9'
+    };
+    
+    // Reverse table for decryption
+    const reverseTable = {};
+    for (let key in codeTable) {
+      reverseTable[codeTable[key]] = key;
+    }
+    
+    // GSAP animations
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!performanceMode) {
+        createParticles();
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger, TextPlugin);
+        // Animate elements on scroll
+        gsap.utils.toArray('.fade-in').forEach((el, i) => {
+          gsap.from(el, {
+            opacity: 0,
+            y: 50,
+            duration: 0.8,
+            delay: i * 0.1,
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 90%',
+            }
+          });
+        });
+      } else {
+        document.body.classList.add('performance-mode');
+      }
+    });
+    
+    // Encryption function
+    function encrypt() {
+      let text = document.getElementById('plain').value.toUpperCase();
+      if (!text) {
+        showNotification('Wpisz tekst do zaszyfrowania!', true);
+        return;
+      }
+      
+      let coded = '';
+      for (let char of text) {
+        coded += codeTable[char] || '???';
+      }
+      
+      const resultBox = document.getElementById('encrypted');
+      resultBox.innerHTML = '';
+      resultBox.classList.add('has-content');
+      
+      // Animate text appearance
+      gsap.to(resultBox, {
+        text: {
+          value: coded,
+          speed: 1,
+        },
+        duration: 1,
+        ease: "power2.out"
+      });
+      
+      showNotification('Tekst zaszyfrowany pomyślnie!');
+    }
+    
+    // Decryption function
+    function decrypt() {
+      let coded = document.getElementById('coded').value.trim().toUpperCase();
+      if (!coded) {
+        showNotification('Wpisz tekst zaszyfrowany!', true);
+        return;
+      }
+      
+      if (coded.length % 3 !== 0) {
+        showNotification('Tekst powinien mieć długość podzielną przez 3!', true);
+        return;
+      }
+      
+      let plain = '';
+      for (let i = 0; i < coded.length; i += 3) {
+        let code = coded.substr(i, 3);
+        plain += reverseTable[code] || '?';
+      }
+      
+      const resultBox = document.getElementById('decrypted');
+      resultBox.innerHTML = '';
+      resultBox.classList.add('has-content');
+      
+      // Animate text appearance
+      gsap.to(resultBox, {
+        text: {
+          value: plain,
+          speed: 1,
+        },
+        duration: 1,
+        ease: "power2.out"
+      });
+      
+      showNotification('Tekst odszyfrowany pomyślnie!');
+    }
+    
+    // Copy result to clipboard
+    function copyResult(elementId) {
+      const resultBox = document.getElementById(elementId);
+      const text = resultBox.textContent;
+      
+      if (!text || text.includes('pojawi')) {
+        showNotification('Brak danych do skopiowania!', true);
+        return;
+      }
+      
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          showNotification('Skopiowano do schowka!');
+        })
+        .catch(err => {
+          showNotification('Błąd kopiowania!', true);
+          console.error('Błąd kopiowania: ', err);
+        });
+    }
+    
+    // Clear input field
+    function clearInput(fieldId) {
+      document.getElementById(fieldId).value = '';
+      
+      if (fieldId === 'plain') {
+        document.getElementById('encrypted').innerHTML = '<span class="placeholder">Wynik szyfrowania pojawi się tutaj...</span>';
+        document.getElementById('encrypted').classList.remove('has-content');
+      } else {
+        document.getElementById('decrypted').innerHTML = '<span class="placeholder">Wynik deszyfrowania pojawi się tutaj...</span>';
+        document.getElementById('decrypted').classList.remove('has-content');
+      }
+      
+      showNotification('Pole wyczyszczone!');
+    }
+    
+    // Show notification
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      const icon = notification.querySelector('i');
+      const text = notification.querySelector('span');
+      
+      text.textContent = message;
+      notification.classList.remove('error');
+      
+      if (isError) {
+        notification.classList.add('error');
+        icon.className = 'fas fa-exclamation-circle';
+      } else {
+        icon.className = 'fas fa-check-circle';
+      }
+      
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Add enter key functionality
+    document.getElementById('plain').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') encrypt();
+    });
+    
+    document.getElementById('coded').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') decrypt();
+    });
+
+    // Intuicyjne podświetlenie par ZNAK-KOD w tabeli kodów algorytmu
+    document.addEventListener('DOMContentLoaded', function() {
+      var table = document.querySelector('.table-container table');
+      if (table) {
+        table.addEventListener('mouseover', function(e) {
+          if (e.target.tagName === 'TD') {
+            var cell = e.target;
+            var cellIndex = cell.cellIndex;
+            var row = cell.parentElement;
+            // Parami: (0,1), (2,3), (4,5)
+            if (cellIndex % 2 === 0 && cellIndex < 6) {
+              // ZNAK
+              cell.classList.add('highlight-pair');
+              if (row.cells[cellIndex+1]) row.cells[cellIndex+1].classList.add('highlight-pair');
+            } else if (cellIndex % 2 === 1 && cellIndex < 6) {
+              // KOD
+              cell.classList.add('highlight-pair');
+              if (row.cells[cellIndex-1]) row.cells[cellIndex-1].classList.add('highlight-pair');
+            }
+          }
+        });
+        table.addEventListener('mouseout', function(e) {
+          if (e.target.tagName === 'TD') {
+            var cell = e.target;
+            var cellIndex = cell.cellIndex;
+            var row = cell.parentElement;
+            if (cellIndex % 2 === 0 && cellIndex < 6) {
+              cell.classList.remove('highlight-pair');
+              if (row.cells[cellIndex+1]) row.cells[cellIndex+1].classList.remove('highlight-pair');
+            } else if (cellIndex % 2 === 1 && cellIndex < 6) {
+              cell.classList.remove('highlight-pair');
+              if (row.cells[cellIndex-1]) row.cells[cellIndex-1].classList.remove('highlight-pair');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
